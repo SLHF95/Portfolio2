@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(pacman)
+p_load(ggplot2, rethinking)
 ```
 
 ## In this assignment we learn how to assess rates from a binomial distribution, using the case of assessing your teachers' knowledge of CogSci
@@ -28,20 +30,372 @@ This is the data:
 
 Questions:
 
-1. What's Riccardo's estimated knowledge of CogSci? What is the probability he knows more than chance (0.5) [try figuring this out. if you can't peek into chapters 3.1 and 3.2 and/or the slides]?
+1. What's Riccardo's estimated knowledge of CogSci? What is the probability he knows more than chance (0.5) [try figuring this out. if you can't peek into chapters 3.1 and 3.2 and/or the slides]? 
+
 - First implement a grid approximation (hint check paragraph 2.4.1!) with a uniform prior, calculate the posterior and plot the results
-- Then implement a quadratic approximation (hint check paragraph 2.4.2!).
+-( Then implement a quadratic approximation (hint check paragraph 2.4.2!).)
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
+  
+
+```{r}
+#What's Riccardo's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+#prior
+dens = 20
+p_grid = seq(from = 0, to = 1, length.out = dens)
+prior = rep(1, dens)
+#1 because we are agnostic and don't know anything. assume each point is equally likely.
+
+#likelihood
+R_likelihood = dbinom(3, size = 6, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+R_unstd.posterior = R_likelihood * prior
+
+#standardize the posterior so it sums to 1
+R_posterior = R_unstd.posterior/sum(R_unstd.posterior)
+
+#draw the plot
+R_Data=data.frame(grid=p_grid,posterior=R_posterior,prior=prior,likelihood=R_likelihood)
+ggplot(R_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+
+#What is the probability he knows more than chance?
+sum(R_posterior[p_grid > 0.5])
+
+
+#quadratic approximation
+#to use map, provide a formula, a list of data, and a list of start values for the parameters
+R_globe.qa = map(
+  alist(
+    c ~ dbinom(6, p) , #binomial likelihood
+    p ~ dunif(0, 1)    #uniform prior
+  ) ,
+data = list(c = 3)) #count of corrects
+
+#display summary of quadratic approximation
+precis(R_globe.qa)
+
+```
+
 
 2. Estimate all the teachers' knowledge of CogSci. Who's best? Use grid approximation. Comment on the posteriors of Riccardo and Mikkel.
 2a. Produce plots of the prior, and posterior for each teacher.
 
+```{r}
+#What's Kristian's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+#prior
+dens = 20
+p_grid = seq(from = 0, to = 1, length.out = dens)
+prior = rep(1, dens)
+#1 because we are agnostic and don't know anything. assume each point is equally likely.
+
+#likelihood
+K_likelihood = dbinom(2, size = 2, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+K_unstd.posterior = K_likelihood * prior
+
+#standardize the posterior so it sums to 1
+K_posterior = K_unstd.posterior/sum(K_unstd.posterior)
+
+#draw the plot
+K_Data=data.frame(grid=p_grid,posterior=K_posterior,prior=prior,likelihood=K_likelihood)
+ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+
+```
+
+```{r}
+#What's Josh's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+#prior
+dens = 20
+p_grid = seq(from = 0, to = 1, length.out = dens)
+prior = rep(1, dens)
+#1 because we are agnostic and don't know anything. assume each point is equally likely.
+
+#likelihood
+J_likelihood = dbinom(160, size = 198, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+J_unstd.posterior = J_likelihood * prior
+
+#standardize the posterior so it sums to 1
+J_posterior = J_unstd.posterior/sum(J_unstd.posterior)
+
+#draw the plot
+J_Data=data.frame(grid=p_grid,posterior=J_posterior,prior=prior,likelihood=J_likelihood)
+ggplot(J_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+```
+
+```{r}
+#What's Mikkel's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+#prior
+dens = 20
+p_grid = seq(from = 0, to = 1, length.out = dens)
+prior = rep(1, dens)
+#1 because we are agnostic and don't know anything. assume each point is equally likely.
+
+#likelihood
+M_likelihood = dbinom(66, size = 132, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+M_unstd.posterior = M_likelihood * prior
+
+#standardize the posterior so it sums to 1
+M_posterior = M_unstd.posterior/sum(M_unstd.posterior)
+
+#draw the plot
+M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior,likelihood=M_likelihood)
+ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+```
+
+
 3. Change the prior. Given your teachers have all CogSci jobs, you should start with a higher appreciation of their knowledge: the prior is a normal distribution with a mean of 0.8 and a standard deviation of 0.2. Do the results change (and if so how)?
 3a. Produce plots of the prior and posterior for each teacher.
 
+```{r}
+#What's Riccardo's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+#prior
+dens = 20
+p_grid = seq(from = 0, to = 1, length.out = dens)
+prior2 = dnorm(p_grid, mean = 0.8,sd = 0.2)
+
+
+#likelihood
+R_likelihood = dbinom(3, size = 6, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+R_unstd.posterior = R_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+R_posterior = R_unstd.posterior/sum(R_unstd.posterior)
+
+#draw the plot
+R_Data=data.frame(grid=p_grid,posterior=R_posterior,prior=prior2,likelihood=R_likelihood)
+ggplot(R_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+
+```
+
+
+```{r}
+#What's Kristian's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+#likelihood
+K_likelihood = dbinom(2, size = 2, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+K_unstd.posterior = K_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+K_posterior = K_unstd.posterior/sum(K_unstd.posterior)
+
+#draw the plot
+K_Data=data.frame(grid=p_grid,posterior=K_posterior,prior=prior2,likelihood=K_likelihood)
+ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+
+```
+
+```{r}
+#What's Josh's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+
+#likelihood
+J_likelihood = dbinom(160, size = 198, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+J_unstd.posterior = J_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+J_posterior = J_unstd.posterior/sum(J_unstd.posterior)
+
+#draw the plot
+J_Data=data.frame(grid=p_grid,posterior=J_posterior,prior=prior2,likelihood=J_likelihood)
+ggplot(J_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+```
+
+```{r}
+#What's Mikkel's estimated knowledge of CogSci?
+#First we define prior and likelihood
+
+
+
+#likelihood
+M_likelihood = dbinom(66, size = 132, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+M_unstd.posterior = M_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+M_posterior = M_unstd.posterior/sum(M_unstd.posterior)
+
+#draw the plot
+M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior2,likelihood=M_likelihood)
+ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+```
+
+
 4. You go back to your teachers and collect more data (multiply the previous numbers by 100). Calculate their knowledge with both a uniform prior and a normal prior with a mean of 0.8 and a standard deviation of 0.2. Do you still see a difference between the results? Why?
 
+```{r}
+#Riccardo uniform prior
+
+#likelihood
+R_likelihood = dbinom(300, size = 600, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+R_unstd.posterior = R_likelihood * prior
+
+#standardize the posterior so it sums to 1
+R_posterior = R_unstd.posterior/sum(R_unstd.posterior)
+
+#draw the plot
+R_Data=data.frame(grid=p_grid,posterior=R_posterior,prior=prior,likelihood=R_likelihood)
+ggplot(R_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Uniform prior") 
+```
+
+```{r}
+#Riccardo 
+#likelihood
+R_likelihood = dbinom(300, size = 600, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+R_unstd.posterior = R_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+R_posterior = R_unstd.posterior/sum(R_unstd.posterior)
+
+#draw the plot
+R_Data=data.frame(grid=p_grid,posterior=R_posterior,prior=prior2,likelihood=R_likelihood)
+ggplot(R_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Updated prior")  
+```
+
+```{r}
+#Kristian uniform prior
+
+#likelihood
+K_likelihood = dbinom(200, size = 200, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+K_unstd.posterior = K_likelihood * prior
+
+#standardize the posterior so it sums to 1
+K_posterior = K_unstd.posterior/sum(K_unstd.posterior)
+
+#draw the plot
+K_Data=data.frame(grid=p_grid,posterior=K_posterior,prior=prior,likelihood=K_likelihood)
+ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Uniform prior") 
+```
+
+```{r}
+#Kristian 
+#likelihood
+K_likelihood = dbinom(200, size = 200, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+K_unstd.posterior = K_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+K_posterior = K_unstd.posterior/sum(K_unstd.posterior)
+
+#draw the plot
+K_Data=data.frame(grid=p_grid,posterior=K_posterior,prior=prior2,likelihood=K_likelihood)
+ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Updated prior") 
+```
+
+```{r}
+#Josh uniform prior
+
+#likelihood
+J_likelihood = dbinom(16000, size = 19800, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+J_unstd.posterior = J_likelihood * prior
+
+#standardize the posterior so it sums to 1
+J_posterior = J_unstd.posterior/sum(J_unstd.posterior)
+
+#draw the plot
+J_Data=data.frame(grid=p_grid,posterior=J_posterior,prior=prior,likelihood=J_likelihood)
+ggplot(J_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Uniform prior") 
+```
+
+```{r}
+#Josh 
+#likelihood
+J_likelihood = dbinom(16000, size = 19800, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+J_unstd.posterior = J_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+J_posterior = J_unstd.posterior/sum(J_unstd.posterior)
+
+#draw the plot
+J_Data=data.frame(grid=p_grid,posterior=J_posterior,prior=prior2,likelihood=J_likelihood)
+ggplot(R_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Updated prior") 
+```
+
+```{r}
+#Mikkel uniform prior
+
+#likelihood
+M_likelihood = dbinom(6600, size = 13200, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+M_unstd.posterior = M_likelihood * prior
+
+#standardize the posterior so it sums to 1
+M_posterior = M_unstd.posterior/sum(M_unstd.posterior)
+
+#draw the plot
+M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior,likelihood=M_likelihood)
+ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Uniform prior") 
+```
+
+```{r}
+#Mikkel 
+#likelihood
+M_likelihood = dbinom(6600, size = 13200, prob = p_grid)
+#3 is how many 1's (correct answers). 6 is how big is your data (how many possible 1's. 
+
+#then we calculate the posterior
+M_unstd.posterior = M_likelihood * prior2
+
+#standardize the posterior so it sums to 1
+M_posterior = M_unstd.posterior/sum(M_unstd.posterior)
+
+#draw the plot
+M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior2,likelihood=M_likelihood)
+ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Updated prior") 
+```
+
 5. Imagine you're a skeptic and think your teachers do not know anything about CogSci, given the content of their classes. How would you operationalize that belief?
+  Don't need to code it, just conceptual.
 
 6. Optional question: Can you estimate the difference between Riccardo's estimated knowledge and that of each of the other teachers? Would you deem it credible (that is, would you believe that it is actually different)?
 
