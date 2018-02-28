@@ -1,6 +1,6 @@
 ---
 title: "Computational Modeling - Week 4 - Assignment 2 - Part 1"
-author: "Riccardo Fusaroli"
+author: "Sofie, Astrid, Helene"
 date: "2/19/2017"
 output: html_document
 ---
@@ -78,7 +78,10 @@ data = list(c = 3)) #count of corrects
 precis(R_globe.qa)
 
 ```
+Prior: red line. 
+The probability of Riccardo knowing more than chance is around 0.5(50%). His estimated knowledge of CogSci is about 0.5, because it has the highest posterior probability. This can be seen from the plot, based on the posterior, which is equally high around 0.5. Therefore, Riccardos estimated knowledge of CogSci is on level with somebody who has no knowledge of CogSci, because his answers are just as good as random chance.
 
+***
 
 2. Estimate all the teachers' knowledge of CogSci. Who's best? Use grid approximation. Comment on the posteriors of Riccardo and Mikkel.
 2a. Produce plots of the prior, and posterior for each teacher.
@@ -105,9 +108,13 @@ K_posterior = K_unstd.posterior/sum(K_unstd.posterior)
 
 #draw the plot
 K_Data=data.frame(grid=p_grid,posterior=K_posterior,prior=prior,likelihood=K_likelihood)
-ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability")
+
+sum(K_posterior[p_grid > 0.5])
 
 ```
+The probability of Kristian knowing more than chance is 0.88 (88%). Kristians knowledge of CogSci is well above chance, and can be said to be quite good. There was not many questions though.
+As can be seen on the plot, his estimated knowledge of CogSci is 1.00, because the posterior probability has the highest value here.
 
 ```{r}
 #What's Josh's estimated knowledge of CogSci?
@@ -132,7 +139,12 @@ J_posterior = J_unstd.posterior/sum(J_unstd.posterior)
 #draw the plot
 J_Data=data.frame(grid=p_grid,posterior=J_posterior,prior=prior,likelihood=J_likelihood)
 ggplot(J_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
+
+sum(J_posterior[p_grid > 0.5])
+J_posterior[p_grid > 0.5]
+J_posterior
 ```
+Because Josh answered a lot more questions than e.g. Riccardo, his probability is less uncertain, visualised by the narrow "curve". The probability of Josh knowing more than chance is 1.00 (100%). As can be seen on the plot, his estimated knowledge of CogSci is 0.789 (78.9%), because the posterior probability has the highest value here.
 
 ```{r}
 #What's Mikkel's estimated knowledge of CogSci?
@@ -158,7 +170,14 @@ M_posterior = M_unstd.posterior/sum(M_unstd.posterior)
 M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior,likelihood=M_likelihood)
 ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
 ```
+Just as with Josh, because as more answers, the probability is less uncertain. The probability of Mikkel knowing more than chance is around 0.5(50%). His estimated knowledge of CogSci is about 0.5, because it has the highest posterior probability. This can be seen from the plot, based on the posterior, which is equally high around 0.5. Therefore, Mikkels estimated knowledge of CogSci is on level with somebody who has no knowledge of CogSci, because his answers are just as good as random chance.
+_______________________
 
+We conclude, that of all the teachers, Josh has the highest estimated knowledge of Cognitive Science. We base this on the ratio of correct answers combined with the amount of answers. Even though Kristian had the highest ratio (1.00), the number of questions he answered (2) is not enough to conclude that he knows most. Therefore, we choose Josh, who had the second highest estimated knowledge (0.8), and the highest amount of questions answered (198).
+
+Both Riccardos and Mikkels estimated knowledge is 0.5, but there is quite a difference in the values of the posterior probability. The largest value of posterior probability for Riccardo is 0.11, while it is 0.4 for Mikkel. This is because Mikkel has answered a lot more questions, and therefore minimizing the uncertainty of the estimate.
+
+***  
 
 3. Change the prior. Given your teachers have all CogSci jobs, you should start with a higher appreciation of their knowledge: the prior is a normal distribution with a mean of 0.8 and a standard deviation of 0.2. Do the results change (and if so how)?
 3a. Produce plots of the prior and posterior for each teacher.
@@ -188,7 +207,7 @@ R_Data=data.frame(grid=p_grid,posterior=R_posterior,prior=prior2,likelihood=R_li
 ggplot(R_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
 
 ```
-
+Taking into account his prior education and knowledge, Riccardos estimated knowledge of CogSci is now slightly greater (0.63).
 
 ```{r}
 #What's Kristian's estimated knowledge of CogSci?
@@ -209,6 +228,7 @@ K_Data=data.frame(grid=p_grid,posterior=K_posterior,prior=prior2,likelihood=K_li
 ggplot(K_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
 
 ```
+Kristian's estimated knowledge of CogSci is now slightly lower (0.89).
 
 ```{r}
 #What's Josh's estimated knowledge of CogSci?
@@ -229,6 +249,7 @@ J_posterior = J_unstd.posterior/sum(J_unstd.posterior)
 J_Data=data.frame(grid=p_grid,posterior=J_posterior,prior=prior2,likelihood=J_likelihood)
 ggplot(J_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
 ```
+Josh's estimated knowledge of CogSci is about the same as before the prior was taken into account (0.789). This makes sense because the prior has a mean of 0.8.
 
 ```{r}
 #What's Mikkel's estimated knowledge of CogSci?
@@ -250,7 +271,8 @@ M_posterior = M_unstd.posterior/sum(M_unstd.posterior)
 M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior2,likelihood=M_likelihood)
 ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") 
 ```
-
+Mikkel's estimated knowledge of CogSci is now slightly greater (0.53).
+***  
 
 4. You go back to your teachers and collect more data (multiply the previous numbers by 100). Calculate their knowledge with both a uniform prior and a normal prior with a mean of 0.8 and a standard deviation of 0.2. Do you still see a difference between the results? Why?
 
@@ -394,8 +416,17 @@ M_Data=data.frame(grid=p_grid,posterior=M_posterior,prior=prior2,likelihood=M_li
 ggplot(M_Data,aes(grid,posterior))+  geom_point()+geom_line()+theme_classic()+  geom_line(aes(grid,prior/dens),color='red')+  xlab("Knowledge of CogSci")+ ylab("posterior probability") + labs(title = "Updated prior") 
 ```
 
+Do you still see a difference between the results? Why?
+We still see a difference between the results with a uniform and updated prior. A difference from before is that the posterior probability is much higher in a concentrated area because of more data. The reason why we still see a difference between the results with a uniform and updated prior is that the ratio of correctly answered questions is the same. The only change is that the probability is higher.
+
+*** 
+
 5. Imagine you're a skeptic and think your teachers do not know anything about CogSci, given the content of their classes. How would you operationalize that belief?
   Don't need to code it, just conceptual.
+  
+When we expected our teachers to have some knowledge of the field earlier, we gave them a prior with a mean of 0.8. Because of our scepticism now, we could give them a prior with a much lower mean. BUT this would mean that we believed they would actively answer below chance (negative knowledge). This would in itself require some knowledge. So, when you know nothing, we would expect you to be no better than chance and therefore get about half of the answers correct. Therefore, to operationalize the scepticism, we would use a prior with a mean of 0.5.
+
+*** 
 
 6. Optional question: Can you estimate the difference between Riccardo's estimated knowledge and that of each of the other teachers? Would you deem it credible (that is, would you believe that it is actually different)?
 
